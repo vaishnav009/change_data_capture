@@ -1,0 +1,47 @@
+#!/bin/sh
+echo $PWD
+function echo_failed_test (){
+    echo 'Test must be run successfully before push. If you would like to commit without running this test, run git push --no-verify'
+    exit 1
+}
+
+echo "Running infra tests"
+pushd infra/cdk
+base_report_branch=pytest_results
+python -m pytest tests/ --ignore tests/snapshot --cov --cov-report html:$base_report_branch/coverage_infra_html_report --cov-branch --report-log=$base_report_branch/test_results.json || echo_failed_test
+# open coverage report in browser
+start firefox $base_report_branch/coverage_infra_html_report/index.html
+popd
+
+echo "Running SRC tests"
+pushd src
+base_report_branch=pytest_results
+python -m pytest  tests/ --cov --cov-report html:$base_report_branch/coverage_infra_html_report --cov-branch --report-log==$base_report_branch/test_results.json || echo_failed_test
+# open coverage report in browser
+start firefox $base_report_branch/coverage_infra_html_report/index.html
+popd
+
+echo "Zipping lambda src codes"
+python zip_utility.py src src infra/cdk/lambda_codes || echo_failed_test
+
+echo "Running cdk synth"
+pushd infra/cdk
+export AWS_ENVIRONMENT=dev
+cdk synth --output cdk.out/$AWS_REGION/$AWS_ENVIRONMENT || echo_failed_test
+popd
+
+echo "Running cfn template snapshot test"
+pushd infra/cdk
+base_report_branch=pytest_results
+python -m pytest tests/snapshot/ --report-log=$base_report_branch/test_results.json || echo_failed_test
+popd
+
+echo "Running cfn-lint"
+pushd infra/cdk
+cfn-lint cdk.out/**/*template.json --ignore-checks W2002, W3005 || echo_failed_test
+popd
+
+echo "Running cfn-nag"
+pushd infra/cdk
+cfn_nag_scan --input-path cdk.out/ --template-pattern ..*\.template\.json || echo_failed_test
+popd

@@ -1,0 +1,23 @@
+#!/bin/sh
+echo $PWD
+echo_failed_test (){
+    echo 'Test must be run successfully before commit. If you would like to commit without running this test, run git commit --no-verify'
+    exit 1
+}
+
+branch="$(git rev-parse --abbrev-ref HEAD)"
+
+if ["$branch" == "master"]; then
+    echo "cannot commit to master branch directly"
+    exit 1
+fi
+
+echo "Running Flake8 linter"
+Flake8
+status=$?
+if [$status -ne 0]; then
+    echo_failed_test
+fi
+
+echo "Running yamllint"
+yamllint infra/pipeline/ || echo_failed_test
