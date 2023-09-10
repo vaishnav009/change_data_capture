@@ -16,7 +16,6 @@ from aws_cdk import (
     aws_s3_notifications as s3_notif,
     aws_glue as glue
 )
-import aws_cdk as cdk
 
 class ChangeDataCaptureStack(Stack):
 
