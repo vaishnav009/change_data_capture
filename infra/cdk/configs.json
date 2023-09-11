@@ -1,0 +1,64 @@
+{
+    "RDS": {
+        "instance_id": "Mysql-db-instance-for-CDC",
+        "vpc_name": "vpc-132a5e6e",
+        "security_group": "sg-30d1332f",
+        "parameter_group": {
+            "name": "RDS-MySQL-PG",
+            "parameters": {
+                "binlog_format": "ROW"
+            }
+        },
+        "option_group": "default:mysql-8-0",
+        "db_name": "MysqlDBforCDC",
+        "db_username": "admin",
+        "db_password": "bdcljbdfou3gg87et2323r2r87glj"
+    },
+    "S3": {
+        "data_load_bucket": "data-load-bucket-for-cdc",
+        "final_data_bucket": "final-data-bucket-for-cdc",
+        "lambda_trigger_prefix": "dbo/Persons/"
+    },
+    "DMS": {
+        "Source_Endpoint": {
+            "identifier": "RDS-source-endpt",
+            "engine_name": "mysql",
+            "server_name": "mysql-db-instance-for-cdc.cwkebb8rx5wk.us-east-1.rds.amazonaws.com",
+            "port": 3306
+        },
+        "Target_Endpoint": {
+            "identifier": "S3-destination-endpt",
+            "engine_name": "s3",
+            "bucket_name": "data-load-bucket-for-cdc"
+        },
+        "Instance": {
+            "identifier": "dms-instance-rds-s3-cdc-pipeline",
+            "instance_class": "dms.t2.micro",
+            "storage": 50,
+            "engine_version": "3.4.7",
+            "security_groups": ["sg-30d1332f"]
+        }
+    },
+    "IAM": {
+        "DMS": {
+            "s3-access_role": "s3-access-role-for-dms",
+            "managed_policies": ["AmazonS3FullAccess"]
+        },
+        "Lambda": {
+            "s3-access_role": "s3-glue-access-role-for-lambda",
+            "managed_policies": ["AmazonS3FullAccess", "AWSGlueConsoleFullAccess", "CloudWatchFullAccess"]
+        },
+        "Glue": {
+            "s3-access_role": "glue-job-role",
+            "managed_policies": ["AmazonS3FullAccess", "CloudWatchFullAccess"]
+        }
+    },
+    "Lambda": {
+        "function_name": "cdc-trigger-lambda",
+        "handler": "'glue_invocator.lambda_handler"
+    },
+    "Glue": {
+        "script_location": "s3://data-load-bucket-for-cdc/glue_scripts/cdc_glue_job_script.py",
+        "job_name": "cdc-glue-job"
+    }
+}

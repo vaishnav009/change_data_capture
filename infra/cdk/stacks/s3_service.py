@@ -14,7 +14,7 @@ class S3Service:
         return bucket
         
     @staticmethod
-    def create_lambda_trigger(stack, bucket, dest_lambda, prefix='dbo/Persons/'):
+    def create_lambda_trigger(bucket, dest_lambda, prefix):
         trigger_prefix = s3.NotificationKeyFilter(prefix=prefix)
         bucket.add_event_notification(
             s3.EventType.OBJECT_CREATED_PUT,

@@ -6,14 +6,14 @@ from aws_cdk import (
 
 class GlueService:
     @staticmethod
-    def create_glue_job(stack, glue_role):
+    def create_glue_job(stack, job_type, python_version, script_location, job_name, glue_role):
         glue_job_command = glue.CfnJob.JobCommandProperty(
-            name='glueetl',
-            python_version='3',
-            script_location='s3://full-load-bucket-for-cdc/glue_scripts/cdc_glue_job_script.py'
+            name=job_type,
+            python_version=python_version,
+            script_location=script_location
         )
-        glue_job = glue.CfnJob(stack, 'cdc-glue-job',
-                               name='cdc-glue-job',
+        glue_job = glue.CfnJob(stack, job_name,
+                               name=job_name,
                                command=glue_job_command,
                                glue_version='4.0',
                                role=glue_role.role_arn,
