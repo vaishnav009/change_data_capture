@@ -30,7 +30,7 @@ class ChangeDataCaptureStack(Stack):
     @staticmethod
     def create_stack(stack):
         ChangeDataCaptureStack.create_db_instance(stack)
-        ChangeDataCaptureStack.create_full_load_bucket(stack)
+        ChangeDataCaptureStack.create_data_load_bucket(stack)
         ChangeDataCaptureStack.create_final_load_bucket(stack)
         ChangeDataCaptureStack.create_rds_source_endpoint(stack)
         ChangeDataCaptureStack.create_s3_access_role(stack)
@@ -46,12 +46,12 @@ class ChangeDataCaptureStack(Stack):
         stack.db = RDSService.create_rds_instance(stack)
 
     @staticmethod
-    def create_full_load_bucket(stack):
-        stack.full_load_bucket = S3Service.create_bucket(stack, "full-load-bucket-for-cdc", bucket_name='full-load-bucket-for-cdc')
+    def create_data_load_bucket(stack):
+        stack.data_load_bucket = S3Service.create_bucket(stack, bucket_name='data-load-bucket-for-cdc')
 
     @staticmethod
     def create_final_load_bucket(stack):
-        stack.final_data_bucket = S3Service.create_bucket(stack, "final-data-bucket-for-cdc", bucket_name='final-data-bucket-for-cdc')
+        stack.final_data_bucket = S3Service.create_bucket(stack, bucket_name='final-data-bucket-for-cdc')
 
     @staticmethod
     def create_rds_source_endpoint(stack):
@@ -64,7 +64,7 @@ class ChangeDataCaptureStack(Stack):
     
     @staticmethod
     def create_s3_destination_endpoint(stack):
-        stack.s3_destination_endpoint = DMSService.create_destination_endpoint(stack)
+        stack.s3_destination_endpoint = DMSService.create_destination_endpoint(stack, stack.s3_access_role)
     
     @staticmethod
     def create_rds_to_s3_migration_instance(stack):
@@ -77,7 +77,8 @@ class ChangeDataCaptureStack(Stack):
     
     @staticmethod
     def create_trigger_lambda(stack):
-        stack.trigger_lambda = LmabdaService.create_lambda_function(stack)
+        stack.trigger_lambda = LmabdaService.create_lambda_function(stack, stack.trigger_lambda_role)
+        stack.triggers = S3Service.create_lambda_trigger(stack, stack.data_load_bucket, stack.trigger_lambda)
     
     @staticmethod
     def create_glue_job_role(stack):
@@ -86,4 +87,4 @@ class ChangeDataCaptureStack(Stack):
     
     @staticmethod
     def create_transformation_glue_job(stack):
-        stack.transformation_glue_job = GlueService.create_glue_job(stack)
+        stack.transformation_glue_job = GlueService.create_glue_job(stack, stack.glue_job_role)

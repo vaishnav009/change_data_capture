@@ -1,6 +1,6 @@
 import aws_cdk as core
 import aws_cdk.assertions as assertions
-from change_data_capture.change_data_capture_stack import ChangeDataCaptureStack
+from infra.cdk.stacks.change_data_capture_stack import ChangeDataCaptureStack
 
 
 def test_sqs_queue_created():

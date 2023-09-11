@@ -1,18 +1,6 @@
 from aws_cdk import (
-    Duration,
-    Stack,
-    SecretValue,
-    aws_iam as iam,
-    aws_sqs as sqs,
-    aws_sns as sns,
-    aws_sns_subscriptions as subs,
-    aws_rds as rds,
-    aws_ec2 as ec2,
     aws_s3 as s3,
-    aws_dms as dms,
-    aws_lambda as _lambda,
-    aws_s3_notifications as s3_notif,
-    aws_glue as glue
+    aws_s3_notifications as s3_notif
 )
 # from stacks.config import InfraConfig
 
@@ -23,6 +11,7 @@ class S3Service:
         block_public_access = s3.BlockPublicAccess(block_public_acls=False, block_public_policy=False, ignore_public_acls=False, restrict_public_buckets= False)
         bucket = s3.Bucket(stack, bucket_name+"-id", bucket_name=bucket_name,
                            block_public_access=block_public_access)
+        return bucket
         
     @staticmethod
     def create_lambda_trigger(stack, bucket, dest_lambda, prefix='dbo/Persons/'):
@@ -42,3 +31,4 @@ class S3Service:
             s3_notif.LambdaDestination(dest_lambda),
             trigger_prefix
         )
+        return 'OK'

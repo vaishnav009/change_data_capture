@@ -3,7 +3,7 @@
 import aws_cdk as cdk
 import os
 
-from change_data_capture.change_data_capture_stack import ChangeDataCaptureStack
+from stacks.change_data_capture_stack import ChangeDataCaptureStack
 
 
 app = cdk.App()
