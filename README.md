@@ -1,65 +1,13 @@
 
 # Welcome to your CDK Python project!
 
-You should explore the contents of this project. It demonstrates a CDK app with an instance of a stack (`change_data_capture_stack`)
-which contains an Amazon SQS queue that is subscribed to an Amazon SNS topic.
+# Summary
+This Project is developed to capture the change in the existing data stored in RDS DB Instance table. Change Data Capture pipeline (CDC) will first go for the full load of data from RDS to S3.
+After full load, it will continue to listen and capture tha changes occuring in the data and keep on replicating to the data stored in S3.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+# Architecture
+![image](https://github.com/vaishnav009/change_data_capture/assets/30192796/9d646378-0930-4085-b7f1-b1b71ff2ae3e)
 
-This project is set up like a standard Python project.  The initialization process also creates
-a virtualenv within this project, stored under the .venv directory.  To create the virtualenv
-it assumes that there is a `python3` executable in your path with access to the `venv` package.
-If for any reason the automatic creation of the virtualenv fails, you can create the virtualenv
-manually once the init process completes.
+Thanks
 
-To manually create a virtualenv on MacOS and Linux:
 
-```
-$ python -m venv .venv
-```
-
-After the init process completes and the virtualenv is created, you can use the following
-step to activate your virtualenv.
-
-```
-$ source .venv/bin/activate
-```
-
-If you are a Windows platform, you would activate the virtualenv like this:
-
-```
-% .venv\Scripts\activate.bat
-```
-
-Once the virtualenv is activated, you can install the required dependencies.
-
-```
-$ pip install -r requirements.txt
-```
-
-At this point you can now synthesize the CloudFormation template for this code.
-
-```
-$ cdk synth
-```
-
-You can now begin exploring the source code, contained in the hello directory.
-There is also a very trivial test included that can be run like this:
-
-```
-$ pytest
-```
-
-To add additional dependencies, for example other CDK libraries, just add to
-your requirements.txt file and rerun the `pip install -r requirements.txt`
-command.
-
-## Useful commands
-
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
-
-Enjoy!
